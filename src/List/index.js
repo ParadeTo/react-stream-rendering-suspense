@@ -1,5 +1,6 @@
 import React, {useContext, useEffect} from 'react'
 import('isomorphic-fetch')
+import {name} from './bigSize'
 import {useQuery} from '@tanstack/react-query'
 import {EventEmitterContext} from '../context'
 
@@ -24,6 +25,7 @@ const List = () => {
       {query.data.map((item) => (
         <li key={item.name}>{item.name}</li>
       ))}
+      <div style={{visibility: 'hidden'}}>{name}</div>
     </ul>
   )
 }
