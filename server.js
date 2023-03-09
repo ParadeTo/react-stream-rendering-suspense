@@ -43,7 +43,10 @@ app.get('/', async (req, res) => {
       },
     },
   })
-  // await queryClient.prefetchQuery(['data'], getData, {staleTime: 10000})
+  // await Promise.all([
+  //   queryClient.prefetchQuery(['profile'], getData, {staleTime: 10000}),
+  //   queryClient.prefetchQuery(['list'], getData, {staleTime: 10000}),
+  // ])
   const dehydratedState = dehydrate(queryClient)
 
   const templateDOM = new JSDOM(`
