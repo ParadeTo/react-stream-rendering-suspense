@@ -8,8 +8,14 @@ import EventEmitter from './src/eventemitter/eventemitter'
 
 const app = express()
 
-async function getData() {
-  const rsp = await fetch('http://localhost:9000/json')
+async function getList() {
+  const rsp = await fetch('http://localhost:9000/api/list')
+  const data = await rsp.json()
+  return data
+}
+
+async function getProfile() {
+  const rsp = await fetch('http://localhost:9000/api/profile')
   const data = await rsp.json()
   return data
 }
@@ -43,7 +49,11 @@ app.get('/', async (req, res) => {
       },
     },
   })
-  // await queryClient.prefetchQuery(['data'], getData, {staleTime: 10000})
+
+  await Promise.all([
+    queryClient.prefetchQuery(['list'], getList, {staleTime: 100000}),
+    queryClient.prefetchQuery(['profile'], getProfile, {staleTime: 100000}),
+  ])
   const dehydratedState = dehydrate(queryClient)
 
   const templateDOM = new JSDOM(`
@@ -67,15 +77,15 @@ app.get('/', async (req, res) => {
 </html>
 `)
   const templateDoc = templateDOM.window.document
-  const ee = new EventEmitter()
-  ee.on('updateState', () => {
-    const dehydratedState = dehydrate(queryClient)
-    templateDoc.querySelector(
-      '#reactQueryState'
-    ).innerHTML = `window.__REACT_QUERY_STATE__ = ${JSON.stringify(
-      dehydratedState
-    )};`
-  })
+  // const ee = new EventEmitter()
+  // ee.on('updateState', () => {
+  //   const dehydratedState = dehydrate(queryClient)
+  //   templateDoc.querySelector(
+  //     '#reactQueryState'
+  //   ).innerHTML = `window.__REACT_QUERY_STATE__ = ${JSON.stringify(
+  //     dehydratedState
+  //   )};`
+  // })
 
   const stream = new Writable({
     write(chunk, _encoding, cb) {
@@ -101,8 +111,8 @@ app.get('/', async (req, res) => {
       },
     },
     queryClient,
-    dehydratedState,
-    ee
+    dehydratedState
+    // ee
   )
 })
 

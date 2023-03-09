@@ -10,7 +10,7 @@ async function getList() {
 }
 
 const List = () => {
-  const query = useQuery(['data'], getList)
+  const query = useQuery(['list'], getList)
   const ee = useContext(EventEmitterContext)
   if (ee && query.data && ee) {
     ee.emit('updateState')
